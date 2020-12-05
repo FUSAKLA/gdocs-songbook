@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Songbook</title>
+  <base target="_top">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+  <link href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+  <link href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+
+  <style type="text/css">
+      ul {
+          list-style-type: none;
+      }
+
+      .ui-progressbar .ui-progressbar-value {
+          background: #498AF4;
+      }
+
+      button {
+          margin: 3pt;
+      }
+
+      .block {
+          margin-top: 10pt;
+      }
+
+      .ui-progressbar {
+          height: 5pt;
+          margin-top: 3pt;
+          margin-bottom: 20pt;
+      }
+
+      .full-width {
+          width: 98%;
+      }
+
+      .load-file-tree-msg {
+          top: 20pt;
+      }
+
+      /**
+       * ==============================================
+       * Dot Flashing
+       * ==============================================
+       */
+      .dot-flashing {
+          position: relative;
+          margin-top: 20pt;
+          left: 48%;
+          width: 10px;
+          height: 10px;
+          border-radius: 5px;
+          background-color: #9880ff;
+          color: #9880ff;
+          animation: dotFlashing 1s infinite linear alternate;
+          animation-delay: .5s;
+      }
+
+      .dot-flashing::before, .dot-flashing::after {
+          content: '';
+          display: inline-block;
+          position: absolute;
+          top: 0;
+      }
+
+      .dot-flashing::before {
+          left: -15px;
+          width: 10px;
+          height: 10px;
+          border-radius: 5px;
+          background-color: #9880ff;
+          color: #9880ff;
+          animation: dotFlashing 1s infinite alternate;
+          animation-delay: 0s;
+      }
+
+      .dot-flashing::after {
+          left: 15px;
+          width: 10px;
+          height: 10px;
+          border-radius: 5px;
+          background-color: #9880ff;
+          color: #9880ff;
+          animation: dotFlashing 1s infinite alternate;
+          animation-delay: 1s;
+      }
+
+      @keyframes dotFlashing {
+          0% {
+              background-color: #9880ff;
+          }
+          50%,
+          100% {
+              background-color: #ebe6ff;
+          }
+      }
+
+  </style>
+</head>
+<body>
+
+<div class="block form-group" id="songbook-select-form">
+  <label for="songbook">Songbook</label>
+  <select class="full-width songbook-control" id="songbook">
+    <option value=""></option>
+  </select>
+</div>
+
+<div class="block form-group" id="songbook-operations-form">
+  <button class="action songbook-control" id="save-songbook">Save</button>
+  <button class="action songbook-control" id="save-songbook-as">Save as</button>
+  <button class="action songbook-control" id="delete-songbook">Delete</button>
+  <button class="action songbook-control" id="print-songbook">Print</button>
+</div>
+
+<h4>Chords directory structure</h4>
+<hr class="full-width">
+<div id="file-selector">
+  <ul id="chords-dir-structure">
+  </ul>
+</div>
+
+
+</body>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+
+  let currentSongbookDocsIds = [];
+
+  $(function() {
+    loadFileTree();
+    loadSongbooks();
+
+    $("#songbook").change(loadSongbook);
+
+    $("#save-songbook").click(saveCurrentSongbook);
+    $("#save-songbook-as").click(saveSongbookAs);
+    $("#delete-songbook").click(deleteSongbook);
+    $("#print-songbook").click(printSongbook);
+  });
+
+
+  function promiseRunWithErrorHandling() {
+    return promiseRun(...Array.prototype.slice.call(arguments)).catch(function(error) {
+      printErrorMsg(error.toString());
+      songbookControlsDisabled(false);
+    });
+  }
+
+  function promiseRun(func) {
+    let runArgs = Array.prototype.slice.call(arguments).slice(1);
+    return new Promise(function(resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          resolve(result);
+        })
+        .withFailureHandler(function(error) {
+          reject(error);
+        })
+        [func].apply(this, runArgs);
+    });
+  }
+
+
+  function printErrorMsg(msg) {
+    clearMsg();
+    $("#songbook-select-form").after($("<div class=\"error songbook-msg\">" + msg + "</div>"));
+  }
+
+  function printMsg(msg) {
+    clearMsg();
+    return $("#songbook-select-form").after($("<div class=\"songbook-msg\">" + msg + "</div>"));
+  }
+
+  function clearMsg() {
+    $(".songbook-msg").remove();
+  }
+
+  function showProgress(msg) {
+    printMsg(msg).after($("<div id=\"progressbar\" class='progressbar full-width'></div>"));
+    setProgress();
+  }
+
+  function setProgress(value = 0) {
+    $("#progressbar").progressbar({ value: value });
+  }
+
+  function hideProgress() {
+    $("#progressbar").remove();
+  }
+
+  function songbookControlsDisabled(disabled) {
+    $(".songbook-control").each(function(_, control) {
+      control.disabled = disabled;
+    });
+  }
+
+  function currentSongbookId() {
+    let songbookId = $("#songbook  option:selected").val();
+    if (songbookId === "") {
+      throw new Error("You have to select the songbook first.");
+    }
+    return songbookId;
+  }
+
+  function currentSongbookName() {
+    let songbookName = $("#songbook option:selected").text();
+    if (songbookName === "") {
+      throw new Error("You have to select the songbook first.");
+    }
+    return songbookName;
+  }
+
+  function loadSongbooks() {
+    promiseRunWithErrorHandling("listSongbooks").then(function(songbooks) {
+      let selectedSongbookId;
+      try {
+        selectedSongbookId = currentSongbookId();
+      } catch (e) {
+        selectedSongbookId = null;
+      }
+      $(".songbook-select-item").remove();
+      for (let i = 0; i < songbooks.length; i++) {
+        const songbook = songbooks[i];
+        const o = new Option(songbook.name, songbook.id);
+        o.className = "songbook-select-item";
+        if (songbook.lastedited || selectedSongbookId === songbook.id) {
+          o.selected = true;
+        }
+        $("#songbook").append(o);
+      }
+    });
+    loadSongbook();
+  }
+
+  async function printSongbook() {
+    songbookControlsDisabled(true);
+    let songbookId;
+    let songbookName;
+    try {
+      songbookId = currentSongbookId();
+      songbookName = currentSongbookName();
+    } catch (e) {
+      printErrorMsg(e.message);
+      songbookControlsDisabled(false);
+      return;
+    }
+    let startTime = new Date();
+    showProgress("Generating PDF files for print...");
+    let fileIds = getSelectedFileIds();
+    promiseRunWithErrorHandling("PreparePrintDir", songbookId)
+      .then(function(result) {
+        let step = Math.ceil(fileIds.length / 50);
+        let id = 1;
+        let promises = [];
+        let finishedJobs = 0;
+        setProgress(2);
+        while (fileIds.length) {
+          let job = promiseRunWithErrorHandling("generatePrintablePdfs", songbookId, fileIds.splice(0, step), id);
+          job.then(function(result) {
+            finishedJobs++;
+            setProgress(Math.round((finishedJobs / (promises.length + 1)) * 100));
+          });
+          promises.push(job);
+          id += step;
+        }
+        return Promise.all(promises);
+      })
+      .then(function(results) {
+        let fileInfos = [];
+        for (let r = 0; r < results.length; r++) {
+          fileInfos = fileInfos.concat(results[r]);
+        }
+        fileInfos.sort(function(a, b) {
+          return (a.orderId > b.orderId) ? 1 : -1;
+        });
+        return promiseRunWithErrorHandling("generatePrintTocFile", songbookName, songbookId, fileInfos);
+      })
+      .then(function(dirUrl) {
+        setProgress(100);
+        songbookControlsDisabled(false);
+        hideProgress();
+        printMsg("Successfully generated print PDFs into <a href =\"" + dirUrl + "\">this folder</a> in " + Math.round((new Date() - startTime) / 1000) + "s." +
+          "<p><i>Because of technical limitations in Google apps script, it is not possible to generate single PDF file for print. " +
+          "<br>I suggest you use for example the <a href='https://pdfmerge.w69b.com/'>PDF Mergy</a> tool to merge them together.</i></p>");
+      });
+
+
+  }
+
+  function clearSongsSelection() {
+    let treeItems = document.getElementsByClassName("tree-item");
+    for (let i = 0; i < treeItems.length; i++) {
+      treeItems[i].checked = false;
+    }
+  }
+
+  function markFilesSelected(fileIds) {
+    let treeItems = document.getElementsByClassName("tree-item");
+    for (let i = 0; i < fileIds.length; i++) {
+      let fileId = fileIds[i];
+      for (let j = 0; j < treeItems.length; j++) {
+        let item = treeItems[j];
+        if (item.value === fileId) {
+          item.checked = true;
+        }
+      }
+    }
+  }
+
+  function loadSongbook() {
+    songbookControlsDisabled(true);
+    let songbookId;
+    try {
+      songbookId = currentSongbookId();
+    } catch (e) {
+      return;
+    }
+    promiseRunWithErrorHandling("getSongbookFileIds", songbookId).then(function(fileIds) {
+        clearSongsSelection();
+        markFilesSelected(fileIds);
+        songbookControlsDisabled(false);
+      }
+    );
+  }
+
+
+  function loadFileTree() {
+    songbookControlsDisabled(true);
+    let structure = $("#chords-dir-structure");
+    structure.before($("<div id=\"file-structure-loader\" class=\"dot-flashing\"></div>"));
+    promiseRunWithErrorHandling("getChordsFolderStructure").then(function(chordFolderStructure) {
+      $("#file-structure-loader").remove();
+      structure.html(generateFolderHtmlTree(chordFolderStructure, "checkbox"));
+      songbookControlsDisabled(false);
+    });
+  }
+
+  function getSelectedFileIds() {
+    let fileIds = [];
+    $(".tree-item").each(function() {
+      if (this.value !== "" && this.checked) {
+        fileIds.push(this.value);
+      }
+    });
+    return fileIds;
+  }
+
+  function saveSongbookAs() {
+    let songbookName = prompt("New songbook name");
+    if (songbookName === null) {
+      return;
+    }
+    if (songbookName === "") {
+      saveSongbookAs();
+    }
+    saveSongbook(songbookName);
+  }
+
+  function saveCurrentSongbook() {
+    try {
+      saveSongbook(currentSongbookName());
+    } catch (e) {
+      saveSongbookAs();
+    }
+  }
+
+  function saveSongbook(songbookName) {
+    songbookControlsDisabled(true);
+    showProgress("Saving songbook...");
+    setProgress(2);
+    promiseRunWithErrorHandling("saveSongbook", songbookName, getSelectedFileIds()).then(function(songbookDirUrl) {
+      setProgress(100);
+      hideProgress();
+      printMsg("Successfully saved the songbook to <a href=\"" + songbookDirUrl + "\">this folder</a>");
+      loadSongbooks();
+      songbookControlsDisabled(false);
+    });
+  }
+
+
+  function deleteSongbook() {
+    let songbookName;
+    try {
+      songbookName = currentSongbookName();
+    } catch (e) {
+      printErrorMsg(e.message);
+      return;
+    }
+    songbookControlsDisabled(true);
+    promiseRunWithErrorHandling("DeleteSongbook", songbookName).then(function(_) {
+      printMsg("Successfully deleted the songbook: " + songbookName + ".");
+      loadSongbooks();
+      songbookControlsDisabled(false);
+    });
+  }
+
+
+  function createCheck(id, value, name, checked) {
+    return "<input type='checkbox' onclick='updateChecks(this);' class='tree-item' id='" + id + "' value='" + value + "'><label for='" + id + "'>" + name + "</label>";
+  }
+
+  function sanitizeHtmlId(str) {
+    return str.replace(/^[^a-z]+|[^\w:.-]+/gi, "");
+  }
+
+  function generateFolderHtmlTree(folder, parentId) {
+    let i;
+    let html = "";
+    const currentId = parentId + "-dir:" + sanitizeHtmlId(folder.name);
+    html += "<li>" + createCheck(currentId, "", folder.name) + "</li>";
+    html += "<ul>";
+    for (i = 0; i < folder.files.length; i++) {
+      const file = folder.files[i];
+      html += "<li>" + createCheck(currentId + "-file:" + i, file.id, file.name) + "</li>";
+    }
+    for (i = 0; i < folder.folders.length; i++) {
+      html += generateFolderHtmlTree(folder.folders[i], currentId);
+    }
+    html += "</ul>";
+    return html;
+  }
+
+
+  function updateChecks(selectedNode) {
+    const treeItems = document.getElementsByClassName("tree-item");
+    for (let i = 0; i < treeItems.length; i++) {
+      const item = treeItems[i];
+      if (item.id.startsWith(selectedNode.id)) {
+        treeItems[i].checked = selectedNode.checked;
+      }
+    }
+  }
+
+</script>
+</html>

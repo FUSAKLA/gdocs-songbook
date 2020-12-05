@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <title>Songbook</title>
+  <link href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+  <!-- The CSS package above applies Google styling to buttons and other elements. -->
+
+  <style>
+      .block {
+          margin-top: 10pt;
+      }
+
+      .full-width {
+          margin: 3pt !important;
+          width: 100%;
+      }
+
+      .checkbox-label {
+          vertical-align: super;
+      }
+
+      .fa-question-circle {
+          color: gray;
+      }
+
+      .fa-question-circle:hover {
+          color: black;
+      }
+
+      .block-heading {
+          margin-bottom: 0 !important;
+      }
+
+      ul {
+          list-style-type: " - ";
+      }
+
+      /* Tooltip container */
+      .tooltip {
+          position: relative;
+          display: inline-block;
+      }
+
+      .transposition-control {
+          margin-left: 13pt;
+          margin-right: 13pt;
+      }
+
+      .tooltiptext {
+          position: ;
+      }
+
+      /* Tooltip text */
+      .tooltip .tooltiptext {
+          visibility: hidden;
+          font: 13px/18px arial, sans-serif;
+          line-height: 15px;
+          width: 270px;
+          background-color: #555;
+          color: #fff;
+          text-align: left;
+          padding-left: 7pt;
+          padding-right: 7pt;
+          padding-bottom: 7pt;
+          border-radius: 6px;
+
+          /* Position the tooltip text */
+          position: absolute;
+          z-index: 1;
+          top: 13pt;
+          left: -7pt;
+
+          /* Fade in tooltip */
+          opacity: 0;
+          transition: opacity 0.3s;
+      }
+
+      /* Tooltip arrow */
+      .tooltip .tooltiptext::after {
+          content: "";
+          position: absolute;
+          top: -7pt;
+          left: 12pt;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: transparent transparent #555 transparent;
+      }
+
+      /* Show the tooltip text when you mouse over the tooltip container */
+      .tooltip:hover .tooltiptext {
+          visibility: visible;
+          opacity: 1;
+      }
+
+      .tooltip-link {
+          color: lightblue;
+      }
+
+
+  </style>
+</head>
+<body>
+<div class="sidebar branding-below">
+
+  <h4 class="block-heading">
+    <i class="fas fa-question-circle tooltip">
+        <span class="tooltiptext" id="songs-folder-tooltip">
+          <p>
+            Choose the folder, where you (want to) have your songs stored.
+            The Songbook plugin will remember which one it is and next time will use it as a default one.
+          </p>
+        </span>
+    </i> Songs folder
+  </h4>
+  <hr>
+  <div class="block form-group" id="chords-dir-form">
+    <select class="full-width" id="chords-directory">
+      <option value=""></option>
+    </select>
+  </div>
+
+  <div id="generate-toc-button">
+    <button class="action full-width songs-folder-control" id="generate-toc">Generate songs folder TOC</button>
+  </div>
+
+  <h4 class="block-heading">
+    <i class="fas fa-question-circle tooltip">
+        <span class="tooltiptext" id="songbooks-tooltip">
+          <p>
+            Songbooks are used for printing subset of songs from the songs folder.
+            You can save them, update them and generate PDF to print them with automated table of contents.
+            They are persisted in the songs sub folder SONGBOOKS as a folders with the specified name containing
+            links to songs which belong to it.
+          </p>
+        </span>
+    </i> Songbooks
+  </h4>
+  <hr>
+
+  <div id="manage-song-books-button">
+    <button class="action full-width songs-folder-control" id="manage-songbooks">Manage my song books</button>
+  </div>
+
+
+  <h4 class="block-heading">
+    <i class="fas fa-question-circle tooltip">
+        <span class="tooltiptext" id="import-tooltip">
+          <p>
+            You can import a song from any of the supported servers to a new or currently open document.
+            The imported song will automatically have highlighted chords, optimized format and added QR code with link
+            to the Youtube wideo, if specified by the server.
+            Supported chords servers are:
+            <ul id="supported-import-sites-list"></ul>
+          <i>If you would like to add support for other server with chords, please <a class="tooltip-link"
+                                                                                      href="https://github.com/FUSAKLA/gdocs-songbook/issues">file an issue</a>.</i>
+          </p>
+        </span>
+    </i> Import
+  </h4>
+  <hr>
+  <div class="block form-group" id="import-form">
+    <input class="full-width" id="import-url" placeholder="URL of page witch chords to import" type="text"><br />
+    <input class="full-width" id="import-to-current-doc" name="import-to-current-doc" type="checkbox" value="true">
+    <label class="checkbox-label" for="import-to-current-doc"> Overwrite the current document</label><br>
+    <button class="action full-width document-control" id="import">Import</button>
+  </div>
+
+
+  <h4 class="block-heading">
+    <i class="fas fa-question-circle tooltip">
+        <span class="tooltiptext" id="chord-tools-tooltip">
+          <p>
+            Set of tools, to help you manage the current song document chords
+            and other metadata. Modifies only the current document.
+          </p>
+        </span>
+    </i> Chord tools
+  </h4>
+  <hr>
+  <div class="block" id="highlight-button">
+    <button class="action full-width document-control" id="highlight-chords">Highlight chords</button>
+  </div>
+  <div class="block" id="format-file-button">
+    <button class="action full-width document-control" id="format-file">Optimize file format</button>
+  </div>
+  <div class="block" id="insert-chords-images-button">
+    <button class="action full-width document-control" id="insert-chords-images">Add chords images</button>
+  </div>
+  <div class="block" id="insert-metadata-qr-button">
+    <button class="action full-width document-control" id="insert-metadata-qr">Insert QR code for URL</button>
+  </div>
+  <div class="block" id="transposition-block">
+    <p><b>Transposition</b></p>
+    <button class="action transposition-control document-control" id="transpose-down">-</button>
+    <span class="transposition-control" id="transposition-status">0</span>
+    <button class="action transposition-control document-control" id="transpose-up">+</button>
+  </div>
+
+
+</div>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+
+  /**
+   * On document load, assign click handlers to each button.
+   */
+  $(function() {
+    loadChordsDirOptions();
+    loadSupportedImportSites();
+    $("#highlight-chords").click(runHighlightingChords);
+    $("#format-file").click(runFileFormatting);
+    $("#generate-toc").click(runGenerateToc);
+    $("#manage-songbooks").click(manageSongbooks);
+    $("#import").click(importUrl);
+    $("#chords-directory").change(setChordsFolder);
+    $("#insert-chords-images").click(insertChordImages);
+    $("#insert-metadata-qr").click(insertLinkQrCode);
+
+    $("#transpose-up").click(function() {
+      transpose(1);
+    });
+    $("#transpose-down").click(function() {
+      transpose(-1);
+    });
+  });
+
+  function promiseRunWithErrorHandling() {
+    return promiseRun(...Array.prototype.slice.call(arguments)).catch(function(error) {
+      printErrorMsg(error.toString()).then(function() {
+        songsFolderControlsDisabled(false);
+        documentControlsDisabled(false);
+      });
+    });
+  }
+
+  function promiseRun(func) {
+    let runArgs = Array.prototype.slice.call(arguments).slice(1);
+    return new Promise(function(resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          resolve(result);
+        })
+        .withFailureHandler(function(error) {
+          reject(error);
+        })
+        [func].apply(this, runArgs);
+    });
+  }
+
+  function printErrorMsg(msg) {
+    return promiseRun("showErrorMessage", msg);
+  }
+
+  function printMsg(msg) {
+    return promiseRun("showMessage", msg);
+  }
+
+  function showProgress(msg) {
+    printMsg(msg).after($("<div id=\"progressbar\" class='progressbar full-width'></div>"));
+    setProgress();
+  }
+
+  function setProgress(value = 0) {
+    $("#progressbar").progressbar({ value: value });
+  }
+
+  function hideProgress() {
+    $("#progressbar").remove();
+  }
+
+  function songsFolderControlsDisabled(disabled) {
+    $(".songs-folder-control").each(function(i, control) {
+      control.disabled = disabled;
+    });
+  }
+
+  function documentControlsDisabled(disabled) {
+    $(".document-control").each(function(i, control) {
+      control.disabled = disabled;
+    });
+  }
+
+  function getCurrentSongsFolderId() {
+    let songsDirId = $("#chords-directory option:selected").val();
+    if (songsDirId === "") {
+      throw new Error("You have to choose the chords folder.");
+    }
+    return songsDirId;
+  }
+
+  function setChordsFolder() {
+    let chordsDirId;
+    try {
+      chordsDirId = getCurrentSongsFolderId();
+    } catch (e) {
+      return;
+    }
+    promiseRunWithErrorHandling("setChordsDir", chordsDirId);
+  }
+
+  function transpose(step) {
+    documentControlsDisabled(true);
+    let transpositionStatus = $("#transposition-status");
+    let amount = parseInt(transpositionStatus.text()) + step;
+    transpositionStatus.text(amount.toString());
+    promiseRunWithErrorHandling("TransposeChordsInCurrentDocument", step).then(function() {
+      documentControlsDisabled(false);
+    });
+  }
+
+  function loadSupportedImportSites() {
+    promiseRunWithErrorHandling("getSupportedChordsImportSites").then(function(sites) {
+      for (let i = 0; i < sites.length; i++) {
+        $("#supported-import-sites-list").append($("<li class='supported-import-site'><a class='tooltip-link' href=\"" + sites[i].domain + "\">" + sites[i].domain + "</a></li>"));
+      }
+    });
+  }
+
+
+  function loadChordsDirOptions() {
+    songsFolderControlsDisabled(true);
+    promiseRunWithErrorHandling("getFolders").catch(function(err) {
+    }).then(function(dirs) {
+      for (let i = 0; i < dirs.length; i++) {
+        let dir = dirs[i];
+        let o = new Option(dir.name, dir.id);
+        if (dir.default === true) {
+          o.selected = true;
+        }
+        $("#chords-directory").append(o);
+      }
+    }).finally(function() {
+      songsFolderControlsDisabled(false);
+    });
+  }
+
+  function runHighlightingChords() {
+    documentControlsDisabled(true);
+    promiseRunWithErrorHandling("HighlightChordsInCurrentDocument").then(function() {
+      documentControlsDisabled(false);
+    });
+  }
+
+
+  function runFileFormatting() {
+    documentControlsDisabled(true);
+    promiseRunWithErrorHandling("OptimizeLayoutInCurrentDocument").then(function() {
+      documentControlsDisabled(false);
+    });
+  }
+
+  function runGenerateToc() {
+    songsFolderControlsDisabled(true);
+    let tocGenerationStart = new Date().getTime();
+    promiseRunWithErrorHandling("generateToc").then(function(tocFileUrl) {
+      let tocGenerationEnd = new Date().getTime();
+      printMsg("Successfully generated table of contents. You can find it <a href=\"" + tocFileUrl + "\">here</a>.<br>Time elapsed: " + Math.round((tocGenerationEnd - tocGenerationStart) / 1000) + "s.");
+      songsFolderControlsDisabled(false);
+    });
+  }
+
+  function importUrl() {
+    let url = $("#import-url").val();
+    if (url === "") {
+      printErrorMsg("You have to set the URL to be imported first.");
+      return;
+    }
+    this.disabled = true;
+    let currentDoc = false;
+    if ($("#import-to-current-doc").is(":checked")) {
+      currentDoc = true;
+      documentControlsDisabled(true);
+    }
+    promiseRunWithErrorHandling("importUrl", url, currentDoc).then(function(importedFileUrl) {
+      if (currentDoc !== true) {
+        printMsg("Successfully imported new song from URL <a href='" + url + "'>" + url + "</a>.<br>You can fnd if <a href=\"" + importedFileUrl + "\">here</a>.");
+      }
+      documentControlsDisabled(false);
+    });
+  }
+
+  function insertChordImages() {
+    documentControlsDisabled(true);
+    promiseRunWithErrorHandling("AddChordsImagesToCurrentDocument").then(function() {
+      documentControlsDisabled(false);
+    });
+  }
+
+  function insertLinkQrCode() {
+    promiseRunWithErrorHandling("askForString", "URL link for the QR code.").then(function(link) {
+        if (link === null || link === "") {
+          return;
+        }
+        documentControlsDisabled(true);
+        promiseRunWithErrorHandling("AddLinkQrCodeToCurrentDocument", link).then(function() {
+          documentControlsDisabled(false);
+        });
+      }
+    );
+  }
+
+  function manageSongbooks() {
+    promiseRunWithErrorHandling("manageSongbooks");
+  }
+
+
+</script>
+</body>
+</html>
