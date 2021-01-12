@@ -5,15 +5,25 @@
   <title>Songbook</title>
   <link href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/huebee@2/dist/huebee.min.css">
   <!-- The CSS package above applies Google styling to buttons and other elements. -->
 
   <style>
+      .sidebar {
+          padding-top: 3px;
+      }
+
       .block {
           margin-top: 10pt;
       }
 
+      hr {
+          color: lightgray;
+      }
+
       .full-width {
-          margin: 3pt !important;
+          margin-top: 3pt !important;
+          margin-bottom: 3pt !important;
           width: 100%;
       }
 
@@ -31,6 +41,7 @@
 
       .block-heading {
           margin-bottom: 0 !important;
+          margin-top: 8px;
       }
 
       ul {
@@ -43,14 +54,43 @@
           display: inline-block;
       }
 
+      #transposition-controls {
+          left: 4pt;
+          position: relative;
+      }
+
       .transposition-control {
           margin-left: 13pt;
           margin-right: 13pt;
       }
 
-      .tooltiptext {
-          position: ;
+      .color-input {
+          text-align: center;
+          padding: 4pt;
+          border: none;
+          border-radius: 0;
+          width: 95%;
       }
+
+      .centered {
+          text-align: center;
+      }
+
+      #documentation-link-container {
+          bottom: 5px;
+          position: fixed;
+          width: 90%;
+      }
+
+      .huebee__cursor {
+          width: 15px;
+          height: 15px;
+      }
+
+      .huebee__container {
+          border-radius: 0;
+      }
+
 
       /* Tooltip text */
       .tooltip .tooltiptext {
@@ -123,7 +163,10 @@
   </div>
 
   <div id="generate-toc-button">
-    <button class="action full-width songs-folder-control" id="generate-toc">Generate songs folder TOC</button>
+    <button class="action full-width songs-folder-control" id="generate-toc"
+            title="Generates a new document called TOC with table of contents for the specified songs folder.">Generate
+      songs folder TOC
+    </button>
   </div>
 
   <h4 class="block-heading">
@@ -141,7 +184,9 @@
   <hr>
 
   <div id="manage-song-books-button">
-    <button class="action full-width songs-folder-control" id="manage-songbooks">Manage my song books</button>
+    <button class="action full-width songs-folder-control" id="manage-songbooks"
+            title="Opens a window for songbooks management.">Manage my song books
+    </button>
   </div>
 
 
@@ -151,10 +196,11 @@
           <p>
             You can import a song from any of the supported servers to a new or currently open document.
             The imported song will automatically have highlighted chords, optimized format and added QR code with link
-            to the Youtube wideo, if specified by the server.
+            to the Youtube video, if specified by the server.
             Supported chords servers are:
             <ul id="supported-import-sites-list"></ul>
           <i>If you would like to add support for other server with chords, please <a class="tooltip-link"
+                                                                                      target="_blank"
                                                                                       href="https://github.com/FUSAKLA/gdocs-songbook/issues">file an issue</a>.</i>
           </p>
         </span>
@@ -162,12 +208,28 @@
   </h4>
   <hr>
   <div class="block form-group" id="import-form">
-    <input class="full-width" id="import-url" placeholder="URL of page witch chords to import" type="text"><br />
+    <input class="full-width" id="import-url" placeholder="URL of website with the song chords" type="text"><br />
     <input class="full-width" id="import-to-current-doc" name="import-to-current-doc" type="checkbox" value="true">
     <label class="checkbox-label" for="import-to-current-doc"> Overwrite the current document</label><br>
-    <button class="action full-width document-control" id="import">Import</button>
+    <button class="action full-width document-control" id="import" title="Import song from the specified URL.">Import
+    </button>
   </div>
 
+
+  <h4 class="block-heading">
+    <i class="fas fa-question-circle tooltip">
+        <span class="tooltiptext" id="chord-tools-tooltip">
+          <p>
+            Settings to be used byt the chord tools. Will be persisted event if the plugin is closed.
+          </p>
+        </span>
+    </i> Chord settings
+  </h4>
+  <hr>
+  <div id="tools-settings" class="block">
+    <label for="instrument">Instrument</label><select class="full-width" id="instrument"></select>
+    <label for="chords-color">Chords color</label><input id="chords-color" class="color-input" />
+  </div>
 
   <h4 class="block-heading">
     <i class="fas fa-question-circle tooltip">
@@ -180,23 +242,47 @@
     </i> Chord tools
   </h4>
   <hr>
-  <div class="block" id="highlight-button">
-    <button class="action full-width document-control" id="highlight-chords">Highlight chords</button>
-  </div>
-  <div class="block" id="format-file-button">
-    <button class="action full-width document-control" id="format-file">Optimize file format</button>
-  </div>
-  <div class="block" id="insert-chords-images-button">
-    <button class="action full-width document-control" id="insert-chords-images">Add chords images</button>
-  </div>
-  <div class="block" id="insert-metadata-qr-button">
-    <button class="action full-width document-control" id="insert-metadata-qr">Insert QR code for URL</button>
-  </div>
   <div class="block" id="transposition-block">
-    <p><b>Transposition</b></p>
-    <button class="action transposition-control document-control" id="transpose-down">-</button>
-    <span class="transposition-control" id="transposition-status">0</span>
-    <button class="action transposition-control document-control" id="transpose-up">+</button>
+    <p>Transposition</p>
+    <div id="transposition-controls">
+      <button class="action transposition-control document-control" id="transpose-down"
+              title="Transpose all chords up.">
+        -
+      </button>
+      <span class="transposition-control" id="transposition-status">0</span>
+      <button class="action transposition-control document-control" id="transpose-up"
+              title="Transpose all chords down.">
+        +
+      </button>
+    </div>
+    <div class="block" id="highlight-button">
+      <button class="action full-width document-control" id="highlight-chords"
+              title="Highlight all chords in the current document.">Highlight chords
+      </button>
+    </div>
+    <div class="block" id="format-file-button">
+      <button class="action full-width document-control" id="format-file"
+              title="Sets monospace font and lowers font size nad page margins to fit to one page if necessary.">
+        Optimize
+        file format
+      </button>
+    </div>
+    <div class="block" id="insert-chords-images-button">
+      <button class="action full-width document-control" id="insert-chords-images"
+              title="Add images of chords used in the current document for the below selected instrument.">
+        Add chord diagrams
+      </button>
+    </div>
+    <div class="block" id="insert-metadata-qr-button">
+      <button class="action full-width document-control" id="insert-metadata-qr"
+              title="Asks for an URL and generated a QR code pointing to it in the document. Useful for linking Youtube video for example.">
+        Insert QR code for URL
+      </button>
+    </div>
+  </div>
+
+  <div id="documentation-link-container" class="full-width centered">
+    <a id="documentation-link" target="_blank" href="https://songbook.fusakla.cz">Documentation</a>
   </div>
 
 
@@ -204,20 +290,30 @@
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>
-
+<script src="https://unpkg.com/huebee@2/dist/huebee.pkgd.min.js"></script>
+<script type="application/javascript">
   /**
    * On document load, assign click handlers to each button.
    */
   $(function() {
+    loadSupportedInstruments();
     loadChordsDirOptions();
     loadSupportedImportSites();
+    loadColorPicker();
+
+
+    $("#chords-directory").change(setChordsFolder);
+
+    $("#generate-toc").click(runGenerateToc);
+
+    $("#manage-songbooks").click(manageSongbooks);
+
+    $("#import").click(importUrl);
+
+    $("#instrument").change(saveDefaultInstrument);
+
     $("#highlight-chords").click(runHighlightingChords);
     $("#format-file").click(runFileFormatting);
-    $("#generate-toc").click(runGenerateToc);
-    $("#manage-songbooks").click(manageSongbooks);
-    $("#import").click(importUrl);
-    $("#chords-directory").change(setChordsFolder);
     $("#insert-chords-images").click(insertChordImages);
     $("#insert-metadata-qr").click(insertLinkQrCode);
 
@@ -293,6 +389,10 @@
     return songsDirId;
   }
 
+  function saveDefaultInstrument() {
+    promiseRunWithErrorHandling("SaveUserInstrument", this.value);
+  }
+
   function setChordsFolder() {
     let chordsDirId;
     try {
@@ -301,6 +401,20 @@
       return;
     }
     promiseRunWithErrorHandling("setChordsDir", chordsDirId);
+  }
+
+  function loadColorPicker() {
+    promiseRunWithErrorHandling("loadUserChordsColor").then(function(chordsColor) {
+      let hub = new Huebee($(".color-input")[0], {
+        "notation": "hex",
+        "shades": 10,
+        "saturations": 1
+      });
+      hub.setColor(chordsColor);
+      hub.on("change", function(color) {
+        promiseRunWithErrorHandling("SaveUserChordsColor", color);
+      });
+    });
   }
 
   function transpose(step) {
@@ -316,7 +430,23 @@
   function loadSupportedImportSites() {
     promiseRunWithErrorHandling("getSupportedChordsImportSites").then(function(sites) {
       for (let i = 0; i < sites.length; i++) {
-        $("#supported-import-sites-list").append($("<li class='supported-import-site'><a class='tooltip-link' href=\"" + sites[i].domain + "\">" + sites[i].domain + "</a></li>"));
+        $("#supported-import-sites-list").append($("<li class='supported-import-site'><a class='tooltip-link' target=\"_blank\" href=\"http://" + sites[i].domain + "\">" + sites[i].domain + "</a></li>"));
+      }
+    });
+  }
+
+  function loadSupportedInstruments() {
+    promiseRunWithErrorHandling("GetSupportedInstruments").then(function(instruments) {
+      let targetElement = $("#instrument");
+      for (let i = 0; i < instruments.length; i++) {
+        let instrument = instruments[i];
+        let o = new Option(instrument.name, instrument.name);
+        o.className = "instrument-option";
+        if (instrument.default) {
+          o.selected = true;
+          targetElement.val(instrument);
+        }
+        targetElement.append(o);
       }
     });
   }
@@ -339,6 +469,10 @@
     });
   }
 
+  function getChordsColor() {
+    return $("#chords-color").val();
+  }
+
   function runHighlightingChords() {
     documentControlsDisabled(true);
     promiseRunWithErrorHandling("HighlightChordsInCurrentDocument").then(function() {
@@ -359,7 +493,7 @@
     let tocGenerationStart = new Date().getTime();
     promiseRunWithErrorHandling("generateToc").then(function(tocFileUrl) {
       let tocGenerationEnd = new Date().getTime();
-      printMsg("Successfully generated table of contents. You can find it <a href=\"" + tocFileUrl + "\">here</a>.<br>Time elapsed: " + Math.round((tocGenerationEnd - tocGenerationStart) / 1000) + "s.");
+      printMsg("Table of contents for your chords folder was successfully generated in " + Math.round((tocGenerationEnd - tocGenerationStart) / 1000) + "s.<br><br>You can find it <a target=\"_blank\" href=\"" + tocFileUrl + "\">here</a>.");
       songsFolderControlsDisabled(false);
     });
   }
@@ -378,7 +512,7 @@
     }
     promiseRunWithErrorHandling("importUrl", url, currentDoc).then(function(importedFileUrl) {
       if (currentDoc !== true) {
-        printMsg("Successfully imported new song from URL <a href='" + url + "'>" + url + "</a>.<br>You can fnd if <a href=\"" + importedFileUrl + "\">here</a>.");
+        printMsg("Successfully imported new song from URL: <br><a target=\"_blank\" href='" + url + "'>" + url + "</a>.<br><br><b>You can fnd the imported song <a target=\"_blank\" href=\"" + importedFileUrl + "\">here</a></b>.");
       }
       documentControlsDisabled(false);
     });

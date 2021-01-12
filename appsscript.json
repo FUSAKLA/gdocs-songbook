@@ -11,7 +11,24 @@
   "addOns": {
     "common": {
       "name": "Songbook",
-      "logoUrl": "TODO"
-    }
-  }
+      "logoUrl": "https://songbook.fusakla.cz/assets/images/logo-black.png",
+      "openLinkUrlPrefixes": [
+        "https://songbook.fusakla.cz/",
+        "https://github.com/FUSAKLA/gdocs-songbook",
+        "https://tabs.ultimate-guitar.com/",
+        "https://pisnicky-akordy.cz/",
+        "https://supermusic.sk/",
+        "https://velkyzpevnik.cz/",
+        "https://pdfmerge.w69b.com/"
+      ]
+    },
+    "docs": {}
+  },
+  "urlFetchWhitelist": [
+    "https://songbook.fusakla.cz/",
+    "https://tabs.ultimate-guitar.com/",
+    "https://pisnicky-akordy.cz/",
+    "https://supermusic.sk/",
+    "https://velkyzpevnik.cz/"
+  ]
 }

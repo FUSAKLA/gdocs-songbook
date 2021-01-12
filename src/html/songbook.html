@@ -25,6 +25,11 @@
           margin-top: 10pt;
       }
 
+      .songbook-msg {
+          margin: 10pt;
+          font-size: 13pt;
+      }
+
       .ui-progressbar {
           height: 5pt;
           margin-top: 3pt;
@@ -108,10 +113,16 @@
 </div>
 
 <div class="block form-group" id="songbook-operations-form">
-  <button class="action songbook-control" id="save-songbook">Save</button>
-  <button class="action songbook-control" id="save-songbook-as">Save as</button>
-  <button class="action songbook-control" id="delete-songbook">Delete</button>
-  <button class="action songbook-control" id="print-songbook">Print</button>
+  <button class="action songbook-control" id="save-songbook"
+          title="Saves the current songs selection in the chosen songbook.">Save
+  </button>
+  <button class="action songbook-control" id="save-songbook-as"
+          title="Asks for name of new songbook and saves the current songs selection to it.">Save as
+  </button>
+  <button class="action songbook-control" id="delete-songbook" title="Delete the chosen songbook.">Delete</button>
+  <button class="action songbook-control" id="print-songbook"
+          title="Generate PDF files for all the songs in the songbook with table of contents.">Print
+  </button>
 </div>
 
 <h4>Chords directory structure</h4>
@@ -133,8 +144,9 @@
   $(function() {
     loadFileTree();
     loadSongbooks();
+    loadSongbook();
 
-    $("#songbook").change(loadSongbook);
+    $("#songbook").change(reloadSongbook);
 
     $("#save-songbook").click(saveCurrentSongbook);
     $("#save-songbook-as").click(saveSongbookAs);
@@ -142,6 +154,11 @@
     $("#print-songbook").click(printSongbook);
   });
 
+
+  function reloadSongbook() {
+    clearMsg();
+    loadSongbook();
+  }
 
   function promiseRunWithErrorHandling() {
     return promiseRun(...Array.prototype.slice.call(arguments)).catch(function(error) {
@@ -180,7 +197,7 @@
   }
 
   function showProgress(msg) {
-    printMsg(msg).after($("<div id=\"progressbar\" class='progressbar full-width'></div>"));
+    printMsg(msg).after($("<div id=\"progressbar\" class='progressbar full-width songbook-msg'></div>"));
     setProgress();
   }
 
@@ -206,6 +223,10 @@
     return songbookId;
   }
 
+  function selectSongbookById(id) {
+    $("#songbook option[value='" + id + "']").selected = true;
+  }
+
   function currentSongbookName() {
     let songbookName = $("#songbook option:selected").text();
     if (songbookName === "") {
@@ -216,24 +237,23 @@
 
   function loadSongbooks() {
     promiseRunWithErrorHandling("listSongbooks").then(function(songbooks) {
-      let selectedSongbookId;
+      let selectedSongbookName;
       try {
-        selectedSongbookId = currentSongbookId();
+        selectedSongbookName = currentSongbookName().trim();
       } catch (e) {
-        selectedSongbookId = null;
+        selectedSongbookName = null;
       }
       $(".songbook-select-item").remove();
       for (let i = 0; i < songbooks.length; i++) {
         const songbook = songbooks[i];
         const o = new Option(songbook.name, songbook.id);
         o.className = "songbook-select-item";
-        if (songbook.lastedited || selectedSongbookId === songbook.id) {
+        if (songbook.lastEdited || selectedSongbookName === songbook.name) {
           o.selected = true;
         }
         $("#songbook").append(o);
       }
     });
-    loadSongbook();
   }
 
   async function printSongbook() {
@@ -283,9 +303,9 @@
         setProgress(100);
         songbookControlsDisabled(false);
         hideProgress();
-        printMsg("Successfully generated print PDFs into <a href =\"" + dirUrl + "\">this folder</a> in " + Math.round((new Date() - startTime) / 1000) + "s." +
+        printMsg("Successfully generated print PDFs into <a target=\"_blank\" href =\"" + dirUrl + "\">this folder</a> in " + Math.round((new Date() - startTime) / 1000) + "s." +
           "<p><i>Because of technical limitations in Google apps script, it is not possible to generate single PDF file for print. " +
-          "<br>I suggest you use for example the <a href='https://pdfmerge.w69b.com/'>PDF Mergy</a> tool to merge them together.</i></p>");
+          "<br>I suggest you use for example the <a target=\"_blank\" href='https://pdfmerge.w69b.com/'>PDF Mergy</a> tool to merge them together.</i></p>");
       });
 
 
@@ -371,18 +391,38 @@
   function saveSongbook(songbookName) {
     songbookControlsDisabled(true);
     showProgress("Saving songbook...");
-    setProgress(2);
-    promiseRunWithErrorHandling("saveSongbook", songbookName, getSelectedFileIds()).then(function(songbookDirUrl) {
+    let selectedFileIds = getSelectedFileIds();
+    let songbookInfo = null;
+    promiseRunWithErrorHandling("EnsureSongbookExists", songbookName).then(function(songbookFolderInfo) {
+      setProgress(1);
+      songbookInfo = songbookFolderInfo;
+    }).then(function() {
+      let step = Math.ceil(selectedFileIds.length / 50);
+      let promises = [];
+      let finishedJobs = 0;
+      while (selectedFileIds.length) {
+        let job = promiseRunWithErrorHandling("SaveFilesToSongbook", songbookInfo.folderId, selectedFileIds.splice(0, step));
+        job.then(function() {
+          finishedJobs++;
+          setProgress(Math.round((finishedJobs / (promises.length + 1)) * 100));
+        });
+        promises.push(job);
+      }
+      return Promise.all(promises);
+    }).then(function() {
+      console.log("successfully saved songbook");
       setProgress(100);
       hideProgress();
-      printMsg("Successfully saved the songbook to <a href=\"" + songbookDirUrl + "\">this folder</a>");
+      printMsg("Successfully saved the songbook to <a target=\"_blank\" href=\"" + songbookInfo.url + "\">this folder</a>");
       loadSongbooks();
+      selectSongbookById(songbookInfo.folderId);
       songbookControlsDisabled(false);
     });
   }
 
 
   function deleteSongbook() {
+    clearMsg();
     let songbookName;
     try {
       songbookName = currentSongbookName();
@@ -394,6 +434,7 @@
     promiseRunWithErrorHandling("DeleteSongbook", songbookName).then(function(_) {
       printMsg("Successfully deleted the songbook: " + songbookName + ".");
       loadSongbooks();
+      clearSongsSelection();
       songbookControlsDisabled(false);
     });
   }

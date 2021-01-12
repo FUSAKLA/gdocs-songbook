@@ -21,7 +21,7 @@ function transposeParagraphChords(
     }
   }
   p.setText(newText);
-  makeParagraphBold(p);
+  highlightParagraph(p);
 }
 
 function transposeChordsInDocument(

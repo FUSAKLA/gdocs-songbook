@@ -42,15 +42,22 @@ function getLastEditedSongbookId() {
   return PropertiesService.getUserProperties().getProperty("lastUsedSongbook");
 }
 
-function saveSongbook(songbookName: string, fileIds: string[]) {
+function EnsureSongbookExists(songbookName: string) {
   const songbooksFolder = getSongbooksFolder();
   DeleteSongbook(songbookName);
   const songbookDir = songbooksFolder.createFolder(songbookName);
-  for (let i = 0; i < fileIds.length; i++) {
+  return {
+    folderId: songbookDir.getId(),
+    url: songbookDir.getUrl(),
+  };
+}
+
+function SaveFilesToSongbook(songbookFolderId: string, fileIds: string[]) {
+  const songbookFolder = DriveApp.getFolderById(songbookFolderId);
+  for (let id of fileIds) {
     // @ts-ignore
-    songbookDir.createShortcut(fileIds[i]);
+    songbookFolder.createShortcut(id);
   }
-  return songbookDir.getUrl();
 }
 
 function DeleteSongbook(songbookName: string) {

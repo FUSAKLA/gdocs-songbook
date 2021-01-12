@@ -1,13 +1,26 @@
+function SaveUserChordsColor(color: string) {
+  PropertiesService.getUserProperties().setProperty("chordsColor", color);
+}
+
+function loadUserChordsColor() {
+  let color = PropertiesService.getUserProperties().getProperty("chordsColor");
+  if (color === null) {
+    return "#000000";
+  }
+  return color;
+}
+
 function highlightChordsInDocument(
   document: GoogleAppsScript.Document.Document
 ) {
   for (const p of getDocumentChordsParagraphs(document)) {
-    makeParagraphBold(p);
+    highlightParagraph(p, loadUserChordsColor());
   }
 }
 
-function makeParagraphBold(p: GoogleAppsScript.Document.Paragraph) {
-  const newStyle: any = {};
-  newStyle[DocumentApp.Attribute.BOLD] = true;
-  p.setAttributes(newStyle);
+function highlightParagraph(
+  p: GoogleAppsScript.Document.Paragraph,
+  color: string
+) {
+  p.editAsText().setBold(true).setForegroundColor(color);
 }

@@ -21,7 +21,7 @@ function setDocumentHeader(
 function showDialog(title: string, content: string) {
   const t = HtmlService.createTemplateFromFile("src/html/dialog");
   t.content = content;
-  const html = t.evaluate().setWidth(600).setHeight(100);
+  const html = t.evaluate().setWidth(600).setHeight(200);
   DocumentApp.getUi().showModalDialog(html, title);
 }
 

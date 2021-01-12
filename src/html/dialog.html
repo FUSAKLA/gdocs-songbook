@@ -3,9 +3,17 @@
   <head>
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+    <style type="text/css">
+      .dialog {
+          font-size: 13pt;
+      }
+      .error {
+          font-size: 13pt;
+      }
+    </style>
   </head>
   <body>
-    <p><?!= content ?></p>
+    <p class="dialog"><?!= content ?></p>
     <input type="button" value="Ok" onclick="google.script.host.close()" />
   </body>
 </html>

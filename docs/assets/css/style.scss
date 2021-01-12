@@ -1,0 +1,67 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+.outer {
+  height: auto !important;
+}
+
+.inner {
+  max-width: 60% !important;
+}
+
+#header_wrap {
+  height: 230pt;
+}
+
+#logo {
+  border: none;
+  box-shadow: none;
+}
+
+#logo-container {
+  float: left;
+  margin-right: 20px;
+}
+
+#header-container {
+  padding-left: 20px;
+}
+
+.navigation-stripe {
+  width: 80%;
+}
+
+.navigation {
+  margin: 10px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+img[alt="FUSAKLA"] {
+  width: 70px;
+}
+
+img[alt="screenshot"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  margin-top: 30pt;
+  margin-bottom: 60pt;
+}
+
+img {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#google_translate_element {
+  text-align: right;
+  position: relative;
+  width: 150pt;
+  left: 80%;
+  top: -30pt;
+}

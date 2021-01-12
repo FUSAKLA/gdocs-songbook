@@ -12,6 +12,10 @@ lint:
 format:
 	npx gts fix
 
+.PHONY: open
+open:
+	clasp open
+
 .PHONY: push
 push:
 	clasp push

@@ -2,8 +2,10 @@
 function onOpen() {
   DocumentApp.getUi()
     .createAddonMenu()
-    .addItem("Highlight chords", "HighlightChordsInCurrentDocument")
     .addItem("Show panel", "showSidebar")
+    .addItem("Highlight chords", "HighlightChordsInCurrentDocument")
+    .addItem("Optimize file format", "OptimizeLayoutInCurrentDocument")
+    .addItem("Add chords images", "AddChordsImagesToCurrentDocument")
     .addToUi();
 }
 

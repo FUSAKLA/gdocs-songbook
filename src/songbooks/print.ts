@@ -31,8 +31,15 @@ function generatePrintablePdfs(
 ) {
   const printDir = getPrintDir(dirId);
   const generatedFiles: songbookFileInfo[] = [];
+  Logger.log(documentIds);
   for (const docId of documentIds) {
-    let d = DocumentApp.openById(docId);
+    let d: GoogleAppsScript.Document.Document;
+    try {
+      d = DocumentApp.openById(docId);
+    } catch (e) {
+      Logger.log("Unable to print file with id: " + docId);
+      continue;
+    }
     setPageNumber(d, startId);
     d.saveAndClose();
     const doc = DriveApp.getFileById(docId);
