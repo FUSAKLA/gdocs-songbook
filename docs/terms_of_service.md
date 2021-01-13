@@ -24,6 +24,9 @@ your Google Drive and nothing is sent anywhere. I do not care about sites you vi
 spamming you with emails :)
 
 
+By installing and using this add-on, the user agrees with the above stated terms
+and confirms he read those and is aware of its consequences.
+
 ---
 
 So hopefully you are OK with all of that and in that case I wish you happy playing/singing!
