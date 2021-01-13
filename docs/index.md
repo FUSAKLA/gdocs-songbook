@@ -8,7 +8,7 @@ makes them probably not go away and easily exportable if needed. Google Drive an
 songs format for print, organize the songs in an arbitrary folder structure, share it with friends, and it’s already
 optimized for any devices even with native applications.
 
-![screenshot](/assets/images/screenshot.png)
+![Screenshot of Songbook add-on](/assets/images/screenshot.png)
 
 ## How to install it
 
@@ -17,7 +17,7 @@ _Will be added_
 ## How to run it
 
 The plugin can be used from any opened Google document in the menu `Addons -> Songbook -> Show panel`. This will open a
-sidebar with all the functionality provided. You can run some of the functions right from the `Addons -> Songbook` menu.
+sidebar with all the functionality provided. You can run some functions right from the `Addons -> Songbook` menu.
 Those will be applied to the currently opened document.
 
 ## How it works
