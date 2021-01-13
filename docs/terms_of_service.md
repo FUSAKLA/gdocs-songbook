@@ -1,9 +1,9 @@
 # Foreword
 
 Hi, first I’d like to state that this add-on is non-profitable, and I made it public just in the sense of a good will,
-so it can help others who want to manage their own songbooks.\
-Having said that, I can honestly tell you I’m not interested in any personal data of yours, and I do not wish to cause
-any harm by using the add-on. Hopefully you find it helpful!
+so it can help others who want to manage their own songbooks. Having said that, I can honestly tell you I’m not
+interested in any personal data of yours, and I do not wish to cause any harm by using the add-on. Hopefully you find it
+helpful!
 
 The source code of the add-on is open sourced on GitHub and can be
 found [here on GitHub](https://github.com/FUSAKLA/gdocs-songbook), so please, feel free to inspect it on your own.
