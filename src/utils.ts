@@ -53,7 +53,7 @@ function getChordsDir() {
   let chordDirId = null;
   chordDirId = PropertiesService.getUserProperties().getProperty("chordsDir");
   if (chordDirId === null) {
-    throw Error("You have to select the chords directory");
+    throw Error("You have to select the chords folder");
   }
   return DriveApp.getFolderById(chordDirId);
 }

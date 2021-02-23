@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
+    <title>Songbook dialog</title>
     <base target="_top">
     <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
     <style type="text/css">
-      .dialog {
-          font-size: 13pt;
-      }
-      .error {
-          font-size: 13pt;
-      }
+        .dialog {
+            font-size: 13pt;
+        }
+
+        .error {
+            font-size: 13pt;
+        }
     </style>
-  </head>
-  <body>
-    <p class="dialog"><?!= content ?></p>
-    <input type="button" value="Ok" onclick="google.script.host.close()" />
-  </body>
+</head>
+<body>
+<p class="dialog"><?!= content ?></p>
+<input type="button" value="Ok" onclick="google.script.host.close()"/>
+</body>
 </html>
