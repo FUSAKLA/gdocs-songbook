@@ -48,6 +48,7 @@ function transposeChord(chord: string, amount: number) {
         "A#",
         "B",
     ];
+    
     const normalizeMap: { [id: string]: string } = {
         Cb: "B",
         Db: "C#",
@@ -58,8 +59,11 @@ function transposeChord(chord: string, amount: number) {
         Bb: "A#",
         "E#": "F",
         "B#": "C",
+        "H": "B",
+        "H#": "C",
+        "Hb": "A#",
     };
-    return chord.replace(/[CDEFGAB][b#]?/g, (match) => {
+    return chord.replace(/[CDEFGABH][b#]?/g, (match) => {
         const i =
             (scale.indexOf(normalizeMap[match] ? normalizeMap[match] : match) +
                 amount) %
