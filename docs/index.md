@@ -12,7 +12,7 @@ optimized for any devices even with native applications.
 
 ## How to install it
 
-_Will be added_
+Just install if from the [Google Workspace Marketplace](https://workspace.google.com/marketplace/app/songbook/591739870688)
 
 ## How to run it
 

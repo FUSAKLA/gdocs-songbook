@@ -48,7 +48,7 @@ function transposeChord(chord: string, amount: number) {
         "A#",
         "B",
     ];
-    
+
     const normalizeMap: { [id: string]: string } = {
         Cb: "B",
         Db: "C#",
