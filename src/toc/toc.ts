@@ -36,26 +36,26 @@ function writeTocToFile(
 }
 
 function nestLevelToHeading(lvl: number) {
-  switch (lvl) {
-    case 0: {
-      return DocumentApp.ParagraphHeading.HEADING1
+    switch (lvl) {
+        case 0: {
+            return DocumentApp.ParagraphHeading.HEADING1
+        }
+        case 1: {
+            return DocumentApp.ParagraphHeading.HEADING2
+        }
+        case 2: {
+            return DocumentApp.ParagraphHeading.HEADING3
+        }
+        case 3: {
+            return DocumentApp.ParagraphHeading.HEADING4
+        }
+        case 4: {
+            return DocumentApp.ParagraphHeading.HEADING5
+        }
+        default: {
+            return DocumentApp.ParagraphHeading.HEADING6
+        }
     }
-    case 1: {
-      return DocumentApp.ParagraphHeading.HEADING2
-    }
-    case 2: {
-      return DocumentApp.ParagraphHeading.HEADING3
-    }
-    case 3: {
-      return DocumentApp.ParagraphHeading.HEADING4
-    }
-    case 4: {
-      return DocumentApp.ParagraphHeading.HEADING5
-    }
-    default: {
-      return DocumentApp.ParagraphHeading.HEADING6
-    }
-  }
 }
 
 
@@ -71,7 +71,7 @@ function writeFolderToBody(
     fileStyle[DocumentApp.Attribute.BOLD] = false;
     const folderStyle: any = {};
     folderStyle[DocumentApp.Attribute.BOLD] = true;
-    folderStyle[DocumentApp.Attribute.HEADING] = nestLevelToHeading(nestingLevel/indentationStep)
+    folderStyle[DocumentApp.Attribute.HEADING] = nestLevelToHeading(nestingLevel / indentationStep)
 
     for (i = 0; i < folder.files.length; i++) {
         const folderFile = folder.files[i];
