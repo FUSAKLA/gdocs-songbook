@@ -21,8 +21,11 @@
         "https://tabs.ultimate-guitar.com/",
         "https://pisnicky-akordy.cz/",
         "https://supermusic.sk/",
+        "https://supermusic.cz/",
         "https://velkyzpevnik.cz/",
-        "https://pdfmerge.w69b.com/"
+        "https://www.velkyzpevnik.cz/",
+        "https://pdfmerge.w69b.com/",
+        "https://api.qrserver.com/"
       ]
     },
     "docs": {}
@@ -32,6 +35,9 @@
     "https://tabs.ultimate-guitar.com/",
     "https://pisnicky-akordy.cz/",
     "https://supermusic.sk/",
-    "https://velkyzpevnik.cz/"
+    "https://supermusic.cz/",
+    "https://velkyzpevnik.cz/",
+    "https://www.velkyzpevnik.cz/",
+    "https://api.qrserver.com/"
   ]
 }

@@ -17,12 +17,26 @@
             margin-top: 10pt;
         }
 
+        .half-block {
+            display: inline-block;
+            width: 45%;
+            padding: 4pt;
+        }
+
+        #chord-diagram-size {
+            width: 95%;
+        }
+
+        .half-block label{
+            display: block;
+        }
+
         hr {
             color: lightgray;
         }
 
         .full-width {
-            margin-top: 3pt !important;
+            margin-top: 2pt !important;
             margin-bottom: 3pt !important;
             width: 100%;
         }
@@ -232,7 +246,12 @@
     <hr>
     <div id="tools-settings" class="block">
         <label for="instrument">Instrument</label><select class="full-width" id="instrument"></select>
-        <label for="chords-color">Chords color</label><input id="chords-color" class="color-input"/>
+        <div class="half-block">
+            <label for="chords-color">Chords color</label><input id="chords-color" class="color-input"/>
+        </div>
+        <div class="half-block">
+            <label for="chord-diagram-size">Diagrams size %</label><input id="chord-diagram-size" type="number" min="1" max="200" size="7"/>
+        </div>
     </div>
 
     <h4 class="block-heading">
@@ -305,6 +324,7 @@
         loadChordsDirOptions();
         loadSupportedImportSites();
         loadColorPicker();
+        loadDiagramsSize();
 
 
         $("#chords-directory").change(setChordsFolder);
@@ -424,6 +444,17 @@
         });
     }
 
+    function loadDiagramsSize() {
+        promiseRunWithErrorHandling("loadUserDiagramsSize").then(function (diagramSize) {
+            let diagramSizeInput = $("#chord-diagram-size");
+            diagramSizeInput.val(diagramSize)
+            diagramSizeInput.on("change", function (size) {
+                promiseRunWithErrorHandling("SaveUserDiagramSize", diagramSizeInput.val());
+                console.log("!!!!!!!!!!!!!!!!!", diagramSizeInput.val());
+            });
+        });
+    } 
+
     function transpose(step) {
         documentControlsDisabled(true);
         let transpositionStatus = $("#transposition-status");
@@ -481,6 +512,10 @@
     function getChordsColor() {
         return $("#chords-color").val();
     }
+
+    function getDiagramsSizePercents() {
+        return $("#chord-diagram-size").val();
+    };
 
     function runHighlightingChords() {
         documentControlsDisabled(true);
