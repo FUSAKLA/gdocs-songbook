@@ -15,7 +15,7 @@ function getSupportedChordsImportSites() {
   return [
     {
       domain: "ultimate-guitar.com",
-      regexp: /tabs.ultimate-guitar\.com/,
+      regexp: /tabs\.ultimate-guitar\.com/,
       processor: getUltimateGuitarChords,
     },
     {
@@ -33,6 +33,11 @@ function getSupportedChordsImportSites() {
       regexp: /velkyzpevnik\.cz/,
       processor: getVelkyZpevnikChords,
     },
+    {
+      domain: "akordy.kytary.cz",
+      regexp: /akordy\.kytary\.cz/,
+      processor: getKytaryCzChords,
+    },
   ];
 }
 
@@ -45,7 +50,7 @@ function writeChordsToDocument(
   const body = document.getBody();
   body.clear();
   let emptyLines = 0;
-  const beginning = true;
+  let beginning = true;
 
   for (let i = 0; i < chords.rows.length; i++) {
     const lineText = chords.rows[i].trimRight();
@@ -60,6 +65,7 @@ function writeChordsToDocument(
       emptyLines = 0;
     }
     body.appendParagraph(lineText);
+    beginning = false
   }
 
   if (chords.videoLink !== "") {
@@ -114,4 +120,45 @@ function importUrl(url: string, currentDoc: boolean) {
   writeChordsToDocument(targetDoc, chords);
 
   return targetDoc.getUrl();
+}
+
+// Expects list of rows with chords denoted by %<chord>%
+function extractInlineChords(lines: string[]) {
+  const res = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.match(/%[^%]+%/) === null) {
+      res.push(line);
+      continue;
+    }
+    let chordsLine = "";
+    let textLine = "";
+    let isChord = false;
+    let indentCorrection = 0;
+    for (let j = 0; j < line.length; j++) {
+      const character = line.charAt(j);
+      if (character === "%") {
+        if (!isChord) {
+          const indent = j + indentCorrection - chordsLine.length;
+          if (indent > 0) {
+            chordsLine += " ".repeat(indent);
+          }
+          isChord = true;
+        } else {
+          isChord = false;
+        }
+        indentCorrection -= 1;
+        continue;
+      }
+      if (isChord) {
+        chordsLine += character;
+        indentCorrection -= 1;
+      } else {
+        textLine += character;
+      }
+    }
+    res.push(chordsLine);
+    res.push(textLine);
+  }
+  return res;
 }
