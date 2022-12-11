@@ -9,16 +9,32 @@ function transposeParagraphChords(
   let newText = "";
   const whiteSpaceCharRegexp = /\s+/;
   let chord = "";
+  let whiteSpacesToSkip = 0
   for (const char of p.getText()) {
     if (whiteSpaceCharRegexp.exec(char)) {
       if (chord) {
-        newText += transposeChord(chord, amount);
+        let transposedChord = transposeChord(chord, amount);
+        let whiteSpaceDiff = chord.length - transposedChord.length
+        if (whiteSpaceDiff > 0) {
+          transposedChord += " ".repeat(whiteSpaceDiff)
+        } else {
+          whiteSpacesToSkip = whiteSpaceDiff * -1
+        }
+        newText += transposedChord;
         chord = "";
+      }
+      if (whiteSpacesToSkip > 0) {
+        whiteSpacesToSkip--
+        continue
       }
       newText += char;
     } else {
       chord += char;
     }
+  }
+  if (chord) {
+    newText += transposeChord(chord, amount);
+    chord = "";
   }
   p.setText(newText);
   highlightParagraph(p, loadUserChordsColor());
@@ -63,11 +79,8 @@ function transposeChord(chord: string, amount: number) {
     "H#": "C",
     Hb: "A#",
   };
-  return chord.replace(/[CDEFGABH][b#]?/g, (match) => {
-    const i =
-      (scale.indexOf(normalizeMap[match] ? normalizeMap[match] : match) +
-        amount) %
-      scale.length;
+  return chord.replace(/[CDEFGABH][b#]?/, (match) => {
+    const i = (scale.indexOf(normalizeMap[match] ? normalizeMap[match] : match) + amount) % scale.length;
     return scale[i < 0 ? i + scale.length : i];
   });
 }
