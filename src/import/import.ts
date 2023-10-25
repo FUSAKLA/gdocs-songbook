@@ -19,6 +19,11 @@ function getSupportedChordsImportSites() {
       processor: getUltimateGuitarChords,
     },
     {
+      domain: "lacuerda.net",
+      regexp: /acordes\.lacuerda\.net/,
+      processor: getLacuerdaChords,
+    },
+    {
       domain: "pisnicky-akordy.cz",
       regexp: /pisnicky-akordy\.cz/,
       processor: getPisnickyAkordyChords,

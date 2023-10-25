@@ -450,10 +450,9 @@
             diagramSizeInput.val(diagramSize)
             diagramSizeInput.on("change", function (size) {
                 promiseRunWithErrorHandling("SaveUserDiagramSize", diagramSizeInput.val());
-                console.log("!!!!!!!!!!!!!!!!!", diagramSizeInput.val());
             });
         });
-    } 
+    }
 
     function transpose(step) {
         documentControlsDisabled(true);

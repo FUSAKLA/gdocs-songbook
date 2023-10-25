@@ -47,9 +47,9 @@ Most of the songs are already somewhere out there with lyrics and chords so it w
 hand. The plugin supports importing songs from various servers with song chords. The only thing you need to do is copy
 the URL on the site where the song is and paste it to the text area in the plugin. Then you can choose if you want to
 overwrite the current file with the imported song, otherwise it will create a new one in the root of your songs folder.
-The list of currently supported servers can be found in the help text in the plugin. One amongst others is the
-[ultimate-guitar.com](https://ultimate-guitar.com) which is one of the biggest on the Internet. If you miss some servers
-there, you can [create an issue](https://github.com/FUSAKLA/gdocs-songbook/issues/new/choose)
+The list of currently supported servers can be found in the help text in the plugin. Amongst others are the
+[ultimate-guitar.com](https://ultimate-guitar.com) and [lacuerda.net](https://lacuerda.net/) which are one of the biggest on the Internet.
+If you miss some servers there, you can [create an issue](https://github.com/FUSAKLA/gdocs-songbook/issues/new/choose)
 and if reasonable enough, I’d be happy to add support for it.
 
 ### Songbooks

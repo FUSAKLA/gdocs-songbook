@@ -26,7 +26,8 @@
         "https://www.velkyzpevnik.cz/",
         "https://akordy.kytary.cz/",
         "https://pdfmerge.w69b.com/",
-        "https://api.qrserver.com/"
+        "https://api.qrserver.com/",
+        "https://acordes.lacuerda.net/"
       ]
     },
     "docs": {}
@@ -40,6 +41,7 @@
     "https://velkyzpevnik.cz/",
     "https://www.velkyzpevnik.cz/",
     "https://akordy.kytary.cz/",
-    "https://api.qrserver.com/"
+    "https://api.qrserver.com/",
+    "https://acordes.lacuerda.net/"
   ]
 }
