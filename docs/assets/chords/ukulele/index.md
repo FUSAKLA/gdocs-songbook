@@ -411,6 +411,7 @@
   - [Ebadd9](Ebadd9.png)
   - [Ebmadd9](Ebmadd9.png)
   - [fingerings](fingerings.png)
+  - [F](F.png)
   - [Fm](Fm.png)
   - [Fdim](Fdim.png)
   - [Fdim7](Fdim7.png)

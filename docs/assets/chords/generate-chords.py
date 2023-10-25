@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+
+# How to run:
+# docker run -it --network=host -v $PWD:/code --workdir=/code --entrypoint=bash python:3.7 -c "pip install -r requirements.txt && python3 ./generate-chords.py ukulele"
+
 import json
 import os
 import pathlib

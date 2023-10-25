@@ -1,2 +1,2 @@
-git+git://github.com/fusakla/python-fretboard#egg=fretboard
+git+https://github.com/fusakla/python-fretboard#egg=fretboard
 cairosvg
