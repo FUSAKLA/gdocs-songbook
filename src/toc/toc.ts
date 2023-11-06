@@ -9,7 +9,6 @@ function generateToc() {
   }
 
   const structure = getCachedFolderStructure(chordsFolder);
-
   let tocFile: GoogleAppsScript.Document.Document;
   const existingTocFiles = chordsFolder.getFilesByName(TOC_FILE_NAME);
   if (existingTocFiles.hasNext()) {

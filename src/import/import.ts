@@ -43,6 +43,11 @@ function getSupportedChordsImportSites() {
       regexp: /akordy\.kytary\.cz/,
       processor: getKytaryCzChords,
     },
+    {
+      domain: "velky-zpevnik.cz",
+      regexp: /velky-zpevnik\.cz/,
+      processor: getVelkyDashZpevnikChords,
+    },
   ];
 }
 

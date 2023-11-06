@@ -78,7 +78,7 @@ function getCachedFolderStructure(folder: GoogleAppsScript.Drive.Folder) {
     return JSON.parse(cached);
   }
   const res = getFolderStructure(folder);
-  cache.put(cache_key, JSON.stringify(res), 3000);
+  cache.put(cache_key, JSON.stringify(res), 900); // Expire in 15 minutes
   return res;
 }
 

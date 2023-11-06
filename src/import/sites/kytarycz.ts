@@ -9,14 +9,14 @@ function getKytaryCzChords(url: string) {
   const chordsText = chordsDivMatch[1]
     .replace(/<br>/g, "\n")
     .replace(/<char>&nbsp;<\/char>/g, " ")
-    .replace(/<span class="scs-ch[kv]">([^<]+)<\/span>/g, "$1")
+    .replace(/<span class="scs-ch[bkv]">([^<]+)<\/span>/g, "$1")
     .replace(/<div class="scs-chord">([^<]+)<\/div>/g, "%$1%")
     .replace(/<div>([^<]+)<\/div>/g, "$1\n")
     .replace(
       /<div class="scs-section" data-type="([^"]+)">([^<]+)<\/div>/g,
       "$1:\n$2\n\n"
     );
-  const metadataRegexp = /<title>(.*) - (.*) \| Akordy<\/title>/;
+  const metadataRegexp = /<title>(.*) - (.*) \| .*<\/title>/;
   const metadataMatch = html.match(metadataRegexp);
   if (metadataMatch === null || metadataMatch.length !== 3) {
     throw Error("failed to find the chords metadata.");

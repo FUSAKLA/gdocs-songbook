@@ -536,7 +536,7 @@
         let tocGenerationStart = new Date().getTime();
         promiseRunWithErrorHandling("generateToc").then(function (tocFileUrl) {
             let tocGenerationEnd = new Date().getTime();
-            printMsg("Table of contents for your chords folder was successfully generated in " + Math.round((tocGenerationEnd - tocGenerationStart) / 1000) + "s.<br><br>You can find it <a target=\"_blank\" href=\"" + tocFileUrl + "\">here</a>.");
+            printMsg("Table of contents for your chords folder was successfully generated in " + Math.round((tocGenerationEnd - tocGenerationStart) / 1000) + "s.<br><blockquote>(The content of your chords directory is cached and read at most once in 15m, so if the TOC does not match the actual contents, please retry it after 15m.)</blockquote><br><br>You can find it <a target=\"_blank\" href=\"" + tocFileUrl + "\">here</a>.");
             songsFolderControlsDisabled(false);
         });
     }
