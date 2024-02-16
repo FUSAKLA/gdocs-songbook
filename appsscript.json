@@ -27,7 +27,8 @@
         "https://akordy.kytary.cz/",
         "https://pdfmerge.w69b.com/",
         "https://api.qrserver.com/",
-        "https://acordes.lacuerda.net/"
+        "https://acordes.lacuerda.net/",
+        "https://www.songbook.fun/"
       ]
     },
     "docs": {}
@@ -43,6 +44,7 @@
     "https://akordy.kytary.cz/",
     "https://api.qrserver.com/",
     "https://acordes.lacuerda.net/",
-    "https://velky-zpevnik.cz/"
+    "https://velky-zpevnik.cz/",
+    "https://www.songbook.fun/"
   ]
 }

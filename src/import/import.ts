@@ -19,6 +19,11 @@ function getSupportedChordsImportSites() {
       processor: getUltimateGuitarChords,
     },
     {
+      domain: "songbook.fun",
+      regexp: /songbook\.fun/,
+      processor: getSongbookFunChords,
+    },
+    {
       domain: "lacuerda.net",
       regexp: /acordes\.lacuerda\.net/,
       processor: getLacuerdaChords,
@@ -75,7 +80,7 @@ function writeChordsToDocument(
       emptyLines = 0;
     }
     body.appendParagraph(lineText);
-    beginning = false
+    beginning = false;
   }
 
   if (chords.videoLink !== "") {
