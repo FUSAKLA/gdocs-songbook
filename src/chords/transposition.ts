@@ -9,23 +9,23 @@ function transposeParagraphChords(
   let newText = "";
   const whiteSpaceCharRegexp = /\s+/;
   let chord = "";
-  let whiteSpacesToSkip = 0
+  let whiteSpacesToSkip = 0;
   for (const char of p.getText()) {
     if (whiteSpaceCharRegexp.exec(char)) {
       if (chord) {
-        let transposedChord = transposeChord(chord, amount);
-        let whiteSpaceDiff = chord.length - transposedChord.length
+        let transposedChord = transposeChordString(chord, amount);
+        let whiteSpaceDiff = chord.length - transposedChord.length;
         if (whiteSpaceDiff > 0) {
-          transposedChord += " ".repeat(whiteSpaceDiff)
+          transposedChord += " ".repeat(whiteSpaceDiff);
         } else {
-          whiteSpacesToSkip = whiteSpaceDiff * -1
+          whiteSpacesToSkip = whiteSpaceDiff * -1;
         }
         newText += transposedChord;
         chord = "";
       }
       if (whiteSpacesToSkip > 0) {
-        whiteSpacesToSkip--
-        continue
+        whiteSpacesToSkip--;
+        continue;
       }
       newText += char;
     } else {
@@ -33,7 +33,7 @@ function transposeParagraphChords(
     }
   }
   if (chord) {
-    newText += transposeChord(chord, amount);
+    newText += transposeChordString(chord, amount);
     chord = "";
   }
   p.setText(newText);
@@ -47,6 +47,15 @@ function transposeChordsInDocument(
   for (const p of getDocumentChordsParagraphs(doc)) {
     transposeParagraphChords(p, amount);
   }
+}
+
+function transposeChordString(chordString: string, amount: number) {
+  let parts = chordString.split("/");
+  let transposedChord = transposeChord(parts[0], amount);
+  if (parts.length == 2) {
+    transposedChord += "/" + transposeChord(parts[1], amount);
+  }
+  return transposedChord;
 }
 
 function transposeChord(chord: string, amount: number) {
@@ -79,8 +88,13 @@ function transposeChord(chord: string, amount: number) {
     "H#": "C",
     Hb: "A#",
   };
-  return chord.replace(/[CDEFGABH][b#]?/, (match) => {
-    const i = (scale.indexOf(normalizeMap[match] ? normalizeMap[match] : match) + amount) % scale.length;
+  let transposedChord = chord.replace(/[CDEFGABH][b#]?/, (match) => {
+    const i =
+      (scale.indexOf(normalizeMap[match] ? normalizeMap[match] : match) +
+        amount) %
+      scale.length;
     return scale[i < 0 ? i + scale.length : i];
   });
+  console.log(chord, amount, transposedChord);
+  return transposedChord;
 }
