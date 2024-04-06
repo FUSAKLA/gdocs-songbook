@@ -96,6 +96,7 @@ function writeChordsToDocument(
 }
 
 function importUrl(url: string, currentDoc: boolean) {
+  const errPrefix = "Failed to import chords from " + url + ": ";
   const supportedSites = getSupportedChordsImportSites();
   let chords: chordSiteData;
   let matchingSite: importSite | null = null;
@@ -109,19 +110,20 @@ function importUrl(url: string, currentDoc: boolean) {
   }
 
   if (matchingSite === null) {
-    throw Error("Unsupported site for import.");
+    throw Error(
+      errPrefix +
+        "Unsupported site, if you would like to import chords from this site, please contact the developer."
+    );
   }
 
   try {
     chords = matchingSite.processor(url);
   } catch (e) {
-    throw Error(
-      "Failed to import data from " + matchingSite.domain + ": " + e.message
-    );
+    throw Error(errPrefix + e.message);
   }
 
   if (chords === null || chords.rows.length === 0) {
-    throw Error("Import error: No chords found.");
+    throw Error(errPrefix + "No chords found.");
   }
 
   let targetDoc = DocumentApp.getActiveDocument();
