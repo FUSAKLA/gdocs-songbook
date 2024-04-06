@@ -29,6 +29,11 @@ function getSupportedChordsImportSites() {
       processor: getLacuerdaChords,
     },
     {
+      domain: "cifraclub.com.br",
+      regexp: /cifraclub\.com\.br/,
+      processor: getCifraclubChords,
+    },
+    {
       domain: "pisnicky-akordy.cz",
       regexp: /pisnicky-akordy\.cz/,
       processor: getPisnickyAkordyChords,
