@@ -23,3 +23,6 @@ While developing use:
  1. Go to `Deploy` and `Manage deployments`
  1. Choose the deployment you just created and scroll down to the `Library` -> `URL`, in the end of the URL is a number **which is the one important**
  1. Go to https://console.cloud.google.com/apis/api/appsmarket-component.googleapis.com/googleapps_sdk?project=gdosc-songbook and update the `Docs Add-on script version` to the number obtained in the previous step.
+
+## See app errors
+Go to https://console.cloud.google.com/errors?project=gdosc-songbook&authuser=0
