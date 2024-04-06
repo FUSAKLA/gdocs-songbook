@@ -1,7 +1,7 @@
 function getDocumentChordsParagraphs(doc: GoogleAppsScript.Document.Document) {
   const body = doc.getBody();
   const chordsRe =
-    /^\s*(?:[A-Za-z]+\:\s*)?(?:\(?([A-Z][a-zA-Z0-9#!/]{0,6})\)?\s*)+\s*$/;
+    /^\s*(?:[A-Za-z]+\:\s*)?(?:[\[\|\/\(]*([A-Z][a-zA-Z0-9#!/]{0,6})[\|\/\(\]]*\s*)+\s*$/;
   const paragraphs = body.getParagraphs();
   const chordsParagraphs: GoogleAppsScript.Document.Paragraph[] = [];
   for (let i = 0; i < paragraphs.length; i++) {
@@ -16,7 +16,7 @@ function getDocumentChordsParagraphs(doc: GoogleAppsScript.Document.Document) {
 function getChords(doc: GoogleAppsScript.Document.Document) {
   const chords: string[] = [];
   for (const p of getDocumentChordsParagraphs(doc)) {
-    for (const chord of p.getText().split(/\s+/)) {
+    for (const chord of p.getText().split(/\s+|[\|\/\(\)\[\]]+/)) {
       if (chord.trim() === "") {
         continue;
       }

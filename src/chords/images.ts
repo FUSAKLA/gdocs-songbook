@@ -27,9 +27,8 @@ function SaveUserInstrument(instrument: string) {
 }
 
 function loadUserInstrument() {
-  const instrument = PropertiesService.getUserProperties().getProperty(
-    "userInstrument"
-  );
+  const instrument =
+    PropertiesService.getUserProperties().getProperty("userInstrument");
   if (instrument === null) {
     return supportedInstruments[0];
   }
